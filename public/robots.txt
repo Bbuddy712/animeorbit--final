@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://anime-orbit-2-1.vercel.app/sitemap.xml
