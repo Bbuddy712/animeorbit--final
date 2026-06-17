@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Anime } from "@/lib/jikan";
 import { AnimeCard } from "./AnimeCard";
 import MonetagBanner from "@/components/Ads/MonetagBanner";
 
-export function AnimeRow({
+function AnimeRowBase({
   id,
   title,
   subtitle,
@@ -49,6 +49,35 @@ export function AnimeRow({
   }, [paused, scrollable, loading]);
 
   const scrollBy = (d: number) => containerRef.current?.scrollBy({ left: d, behavior: "smooth" });
+
+  // Memoize rendered items + inline ads to avoid expensive flatMap on every render
+  const renderedItems = useMemo(() => {
+    if (loading) {
+      return Array.from({ length: 8 }).map((_, i) => (
+        <div
+          key={i}
+          className="aspect-[2/3] w-[170px] shrink-0 rounded-xl bg-[#0f172a] animate-shimmer sm:w-[200px]"
+        />
+      ));
+    }
+
+    return items.flatMap((a, i) => {
+      const nodes: React.ReactNode[] = [
+        <AnimeCard key={a.mal_id} anime={a} index={i} />
+      ];
+
+      // Insert ad every 6 items (performance-friendly placement)
+      if ((i + 1) % 6 === 0 && i !== items.length - 1) {
+        nodes.push(
+          <MonetagBanner
+            key={`monetag-inline-${id ?? "row"}-${Math.floor(i / 6)}`}
+          />
+        );
+      }
+
+      return nodes;
+    });
+  }, [items, loading, id]);
 
   return (
     <section id={id} className="relative py-12 sm:py-16">
@@ -102,24 +131,7 @@ export function AnimeRow({
             className="-mx-4 overflow-x-auto scroll-smooth px-4 scrollbar-hide sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8"
           >
             <div className="flex gap-3 pb-4 sm:gap-4">
-              {loading
-                ? Array.from({ length: 8 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="aspect-[2/3] w-[170px] shrink-0 rounded-xl bg-[#0f172a] animate-shimmer sm:w-[200px]"
-                    />
-                  ))
-                : items.flatMap((a, i) => {
-                    const nodes = [<AnimeCard key={a.mal_id} anime={a} index={i} />];
-
-                    if ((i + 1) % 6 === 0 && i !== items.length - 1) {
-                      nodes.push(
-                        <MonetagBanner key={`monetag-inline-${id ?? title}-${i}`} />
-                      );
-                    }
-
-                    return nodes;
-                  })}
+              {renderedItems}
             </div>
           </div>
         </div>
@@ -127,3 +139,6 @@ export function AnimeRow({
     </section>
   );
 }
+
+export const AnimeRow = memo(AnimeRowBase);
+AnimeRow.displayName = "AnimeRow";
