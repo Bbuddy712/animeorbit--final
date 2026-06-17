@@ -69,7 +69,7 @@ export function MostWatchedCarousel() {
             <div className="mb-1 flex items-center gap-2.5">
               <Eye className="h-7 w-7 text-neon-pink" />
               <h2 className="text-2xl font-bold tracking-tight text-[#f8fafc] sm:text-3xl">
-                {title}
+                Most Watched Anime Today
               </h2>
             </div>
             <p className="max-w-2xl text-sm text-[#94a3b8]">
