@@ -15,11 +15,20 @@ import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 
 const OUT = ".vercel/output";
 
+function run(cmd) {
+  try {
+    execSync(cmd, { stdio: "inherit" });
+  } catch (err) {
+    console.error(`[vercel-build] Command failed: ${cmd}`);
+    throw err;
+  }
+}
+
 // 1. Ensure .env keys exist (mirrors the prebuild hook in package.json)
-execSync("node scripts/ensure-env.mjs", { stdio: "inherit" });
+run("node scripts/ensure-env.mjs");
 
 // 2. Run the normal Vite build (with Cloudflare disabled in vite.config.ts)
-execSync("npx vite build", { stdio: "inherit" });
+run("npx vite build");
 
 // 3. Clean previous output and create Build Output API directory structure
 rmSync(OUT, { recursive: true, force: true });
