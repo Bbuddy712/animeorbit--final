@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Eye, ChevronLeft, ChevronRight, Star, Play } from "lucide-react";
 import { jikanGetTopAnime } from "@/lib/jikan.functions";
@@ -69,7 +69,7 @@ export function MostWatchedCarousel() {
             <div className="mb-1 flex items-center gap-2.5">
               <Eye className="h-7 w-7 text-neon-pink" />
               <h2 className="text-2xl font-bold tracking-tight text-[#f8fafc] sm:text-3xl">
-                Most Watched Anime Today
+                {title}
               </h2>
             </div>
             <p className="max-w-2xl text-sm text-[#94a3b8]">
@@ -116,7 +116,6 @@ export function MostWatchedCarousel() {
                     : "w-1.5 bg-[#94a3b8]/30 hover:bg-[#94a3b8]/60"
                 }`}
                 aria-label={`Go to slide ${i + 1}`}
-              />
             ))}
           </div>
         </div>
@@ -125,7 +124,7 @@ export function MostWatchedCarousel() {
   );
 }
 
-function MostWatchedSlide({ anime, rank }: { anime: Anime; rank: number }) {
+const MostWatchedSlide = memo(function MostWatchedSlide({ anime, rank }: { anime: Anime; rank: number }) {
   const [imgLoaded, setImgLoaded] = useState(false);
 
   return (
@@ -208,4 +207,5 @@ function MostWatchedSlide({ anime, rank }: { anime: Anime; rank: number }) {
       </div>
     </motion.div>
   );
-}
+});
+MostWatchedSlide.displayName = "MostWatchedSlide";
