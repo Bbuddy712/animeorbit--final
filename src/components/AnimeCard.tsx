@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Star, Play } from "lucide-react";
 import type { Anime } from "@/lib/jikan";
 
-export function AnimeCard({ anime, index = 0 }: { anime: Anime; index?: number }) {
+function AnimeCardBase({ anime, index = 0 }: { anime: Anime; index?: number }) {
   const [imgLoaded, setImgLoaded] = useState(false);
 
   return (
@@ -74,3 +74,6 @@ export function AnimeCard({ anime, index = 0 }: { anime: Anime; index?: number }
     </motion.div>
   );
 }
+
+export const AnimeCard = memo(AnimeCardBase);
+AnimeCard.displayName = "AnimeCard";
