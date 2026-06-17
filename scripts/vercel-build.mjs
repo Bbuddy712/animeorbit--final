@@ -1,14 +1,5 @@
 /**
  * Custom Vercel build script using the Build Output API v3.
- *
- * TanStack Start is an SSR framework — `vite build` produces:
- *   dist/client/  (static JS/CSS assets)
- *   dist/server/  (Node.js server bundle with a `fetch(Request)` handler)
- *
- * This script maps that output into the structure Vercel expects:
- *   .vercel/output/static/         ← client assets (served from CDN)
- *   .vercel/output/functions/      ← serverless function (handles SSR + server fns)
- *   .vercel/output/config.json     ← routing rules
  */
 import { execSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
@@ -24,29 +15,25 @@ function run(cmd) {
   }
 }
 
-// 1. Ensure .env keys exist (mirrors the prebuild hook in package.json)
-run("node scripts/ensure-env.mjs");
-
-// 2. Run the normal Vite build (with Cloudflare disabled in vite.config.ts)
+// Run Vite build (prebuild hook in package.json already runs ensure-env.mjs)
 run("npx vite build");
 
-// 3. Clean previous output and create Build Output API directory structure
+// Clean + prepare Build Output API structure
 rmSync(OUT, { recursive: true, force: true });
 mkdirSync(`${OUT}/static`, { recursive: true });
 mkdirSync(`${OUT}/functions/ssr.func`, { recursive: true });
 
-// 4. Copy client assets → static CDN
+// Copy client assets
 cpSync("dist/client", `${OUT}/static`, { recursive: true });
 
-// 4b. Copy public/ files (sitemap.xml, robots.txt, etc.) → static CDN
 if (existsSync("public")) {
   cpSync("public", `${OUT}/static`, { recursive: true });
 }
 
-// 5. Copy server bundle → serverless function
+// Copy server bundle
 cpSync("dist/server", `${OUT}/functions/ssr.func`, { recursive: true });
 
-// 6. Write the serverless function entry that bridges Node.js req/res ↔ Web fetch API
+// Write serverless function bridge
 writeFileSync(
   `${OUT}/functions/ssr.func/index.mjs`,
   `import server from './server.js';
@@ -84,14 +71,11 @@ export default async function handler(req, res) {
 `,
 );
 
-// 7. Mark function directory as ESM so Node.js treats .js files as ES modules
-//    (Vite outputs server.js with `import` syntax)
 writeFileSync(
   `${OUT}/functions/ssr.func/package.json`,
   JSON.stringify({ type: "module" }, null, 2),
 );
 
-// 9. Write function config — use Node.js runtime (server uses node:async_hooks)
 writeFileSync(
   `${OUT}/functions/ssr.func/.vc-config.json`,
   JSON.stringify(
@@ -106,16 +90,13 @@ writeFileSync(
   ),
 );
 
-// 10. Write Build Output API routing config
 writeFileSync(
   `${OUT}/config.json`,
   JSON.stringify(
     {
       version: 3,
       routes: [
-        // Serve static assets from CDN first
         { handle: "filesystem" },
-        // Everything else → SSR serverless function
         { src: "/(.*)", dest: "/ssr" },
       ],
     },
