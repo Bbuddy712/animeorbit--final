@@ -39,6 +39,24 @@ async function generateSitemap() {
       </url>`);
   });
 
+  // Seasonal Landing Pages (High Priority)
+  const seasonalPages = [
+    { path: "/spring-2026-anime", priority: "0.8", changefreq: "daily" },
+    { path: "/summer-2026-anime", priority: "0.8", changefreq: "daily" },
+    { path: "/fall-2026-anime", priority: "0.8", changefreq: "daily" },
+    { path: "/winter-2026-anime", priority: "0.8", changefreq: "daily" },
+  ];
+
+  seasonalPages.forEach((page) => {
+    urls.push(`
+      <url>
+        <loc>${baseUrl}${page.path}</loc>
+        <lastmod>${today}</lastmod>
+        <changefreq>${page.changefreq}</changefreq>
+        <priority>${page.priority}</priority>
+      </url>`);
+  });
+
   // Expanded Genre Pages
   const popularGenres = [
     "action", "comedy", "romance", "fantasy", "sci-fi", "horror",
