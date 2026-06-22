@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import { Toaster } from "sonner";
 
 import { MonetagGlobalAds } from "@/components/Ads/MonetagGlobalAds";
+import { AnalyticsProvider } from "@/components/AnalyticsProvider";
 
 import appCss from "../styles.css?url";
 
@@ -128,6 +129,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <AnalyticsProvider />
       <MonetagGlobalAds />
       <Outlet />
       <Toaster theme="dark" position="top-right" richColors />
