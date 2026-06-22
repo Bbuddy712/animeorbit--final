@@ -176,6 +176,9 @@ function Index() {
       <AdvertiseCard />
       <Footer />
       <MobileStickyAd zone="11058414" />
+
+      {/* Homepage Structured Data */}
+      <HomeStructuredData />
     </div>
   );
 }
