@@ -5,6 +5,7 @@ import { Link } from "@tanstack/react-router";
 import { Eye, ChevronLeft, ChevronRight, Star, Play } from "lucide-react";
 import { jikanGetTopAnime } from "@/lib/jikan.functions";
 import type { Anime } from "@/lib/jikan";
+import { SectionHeader } from "./ui/SectionHeader";
 
 export function MostWatchedCarousel() {
   const { data: items = [], isLoading } = useQuery({
@@ -35,12 +36,7 @@ export function MostWatchedCarousel() {
     return (
       <section className="relative py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-6 flex items-center gap-2.5">
-            <Eye className="h-7 w-7 text-neon-pink" />
-            <h2 className="text-2xl font-bold tracking-tight text-[#f8fafc] sm:text-3xl">
-              Most Watched Anime Today
-            </h2>
-          </div>
+          <SectionHeader title="Most Watched Anime Today" />
           <div className="aspect-[21/9] animate-shimmer rounded-2xl bg-[#0f172a]" />
         </div>
       </section>
@@ -59,43 +55,30 @@ export function MostWatchedCarousel() {
       onMouseLeave={() => setPaused(false)}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
-        >
-          <div>
-            <div className="mb-1 flex items-center gap-2.5">
-              <Eye className="h-7 w-7 text-neon-pink" />
-              <h2 className="text-2xl font-bold tracking-tight text-[#f8fafc] sm:text-3xl">
-                Most Watched Anime Today
-            </h2>
-          </div>
-            <p className="max-w-2xl text-sm text-[#94a3b8]">
-              Top-ranked anime right now — refreshed every hour
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={prev}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-[rgba(124,58,237,0.2)] bg-[rgba(124,58,237,0.08)] text-[#94a3b8] transition hover:border-[rgba(124,58,237,0.4)] hover:bg-[rgba(124,58,237,0.15)] hover:text-white"
-              aria-label="Previous anime"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <button
-              type="button"
-              onClick={next}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-[rgba(124,58,237,0.2)] bg-[rgba(124,58,237,0.08)] text-[#94a3b8] transition hover:border-[rgba(124,58,237,0.4)] hover:bg-[rgba(124,58,237,0.15)] hover:text-white"
-              aria-label="Next anime"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          </div>
-        </motion.div>
+        <SectionHeader
+          title="Most Watched Anime Today"
+          subtitle="Top-ranked anime right now — refreshed every hour"
+          action={
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={prev}
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-[rgba(124,58,237,0.2)] bg-[rgba(124,58,237,0.08)] text-[#94a3b8] transition hover:border-[rgba(124,58,237,0.4)] hover:bg-[rgba(124,58,237,0.15)] hover:text-white"
+                aria-label="Previous anime"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <button
+                type="button"
+                onClick={next}
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-[rgba(124,58,237,0.2)] bg-[rgba(124,58,237,0.08)] text-[#94a3b8] transition hover:border-[rgba(124,58,237,0.4)] hover:bg-[rgba(124,58,237,0.15)] hover:text-white"
+                aria-label="Next anime"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+          }
+        />
 
         {/* Main carousel card */}
         <div className="relative overflow-hidden rounded-2xl border border-[rgba(124,58,237,0.15)] bg-[#0d1526]">
