@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Heart, ListChecks, Sparkles, Star, Trash2, X } from "lucide-react";
+import { ArrowRight, Heart, ListChecks, Sparkles, Star, Trash2, X, Clock, Check } from "lucide-react";
 import { toast } from "sonner";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { useLocalFavorites, useLocalRecentlyViewed, useLocalWatchlist } from "@/hooks/use-local-preferences";
@@ -81,6 +81,14 @@ export function LocalWatchlistMenu({ open, onOpenChange }: { open: boolean; onOp
 
   const isFavorite = (mal_id: number) => favorites.favorites.some((item) => item.mal_id === mal_id);
 
+  const getEmptyMessage = () => {
+    switch (activeCategory) {
+      case "favorites": return "No favorites yet. Heart anime you love to save them here.";
+      case "recentlyViewed": return "Start browsing anime to build your viewing history.";
+      default: return "Add anime to your watchlist to see them here.";
+    }
+  };
+
   return (
     <div ref={rootRef} className="relative">
       <AnimatePresence>
@@ -115,8 +123,13 @@ export function LocalWatchlistMenu({ open, onOpenChange }: { open: boolean; onOp
 
             <div className="max-h-[62vh] overflow-y-auto px-4 py-4 sm:px-5">
               {activeItems.length === 0 ? (
-                <div className="rounded-3xl border border-[rgba(124,58,237,0.14)] bg-[rgba(15,23,42,0.75)] p-8 text-center text-sm text-[#94a3b8]">
-                  {activeCategory === "favorites" ? "No favorite anime yet. Heart a show to save it here." : activeCategory === "recentlyViewed" ? "Browse anime to build a watch history." : "Use the watchlist actions to add anime to this list."}
+                <div className="rounded-3xl border border-[rgba(124,58,237,0.14)] bg-[rgba(15,23,42,0.75)] p-8 text-center">
+                  <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-white/5">
+                    {activeCategory === "favorites" && <Heart className="h-6 w-6 text-[#94a3b8]" />}
+                    {activeCategory === "recentlyViewed" && <Star className="h-6 w-6 text-[#94a3b8]" />}
+                    {activeCategory !== "favorites" && activeCategory !== "recentlyViewed" && <ListChecks className="h-6 w-6 text-[#94a3b8]" />}
+                  </div>
+                  <p className="text-sm text-[#94a3b8]">{getEmptyMessage()}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -150,4 +163,10 @@ export function LocalWatchlistMenu({ open, onOpenChange }: { open: boolean; onOp
       </AnimatePresence>
     </div>
   );
+}
+
+function getEmptyMessage(activeCategory: string) {
+  if (activeCategory === "favorites") return "No favorites yet. Heart anime you love to save them here.";
+  if (activeCategory === "recentlyViewed") return "Start browsing anime to build your viewing history.";
+  return "Add anime to your watchlist to see them here.";
 }
