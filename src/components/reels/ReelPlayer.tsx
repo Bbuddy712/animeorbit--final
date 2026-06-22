@@ -11,18 +11,23 @@ function ReelPlayerComponent({ reel, isActive }: ReelPlayerProps) {
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // TEMP DEBUG - Remove after fixing
-  console.log("[ReelPlayer] Received reel:", reel);
-  console.log("[ReelPlayer] videoUrl:", reel?.videoUrl);
+  // === TEMP DEBUG LOGS ===
+  console.log("[ReelPlayer] reel =", reel);
+  console.log("[ReelPlayer] videoUrl =", reel?.videoUrl);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
+    console.log("[VIDEO SRC after mount]", video.src);
+
     if (isActive && !hasError) {
+      console.log("[PLAY ATTEMPT] isActive=", isActive, "src=", video.src);
       const playPromise = video.play();
       if (playPromise !== undefined) {
-        playPromise.catch(() => {});
+        playPromise
+          .then(() => console.log("[PLAY SUCCESS]"))
+          .catch((err) => console.error("[PLAY ERROR]", err));
       }
     } else {
       video.pause();
@@ -34,13 +39,27 @@ function ReelPlayerComponent({ reel, isActive }: ReelPlayerProps) {
     setIsLoading(true);
   }, [reel.id]);
 
-  const handleLoadedData = () => setIsLoading(false);
+  const handleLoadedData = () => {
+    console.log("[LOADED DATA]", reel.title);
+    setIsLoading(false);
+  };
+
   const handleError = () => {
-    console.error("[ReelPlayer] Video failed to load for:", reel?.title, "src:", reel?.videoUrl);
+    const video = videoRef.current;
+    console.error("[VIDEO ERROR]", {
+      title: reel.title,
+      src: video?.src,
+      error: video?.error,
+      networkState: video?.networkState,
+      readyState: video?.readyState,
+    });
     setHasError(true);
     setIsLoading(false);
   };
-  const handleWaiting = () => setIsLoading(true);
+
+  const handleWaiting = () => {
+    setIsLoading(true);
+  };
 
   return (
     <div className="relative h-full w-full bg-black">
