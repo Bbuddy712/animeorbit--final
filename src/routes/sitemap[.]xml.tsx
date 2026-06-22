@@ -9,7 +9,6 @@ async function generateSitemap() {
   const baseUrl = "https://animeorbit.com";
   const today = new Date().toISOString().split("T")[0];
 
-  // Fetch popular anime for sitemap
   const popularAnime = await jikanGetTopAnime({ data: { limit: 100 } });
 
   const urls: string[] = [];
@@ -41,16 +40,7 @@ async function generateSitemap() {
   });
 
   // Popular Genre Pages
-  const popularGenres = [
-    "action",
-    "comedy",
-    "romance",
-    "fantasy",
-    "sci-fi",
-    "horror",
-    "slice-of-life",
-  ];
-
+  const popularGenres = ["action", "comedy", "romance", "fantasy", "sci-fi", "horror", "slice-of-life"];
   popularGenres.forEach((genre) => {
     urls.push(`
       <url>
@@ -62,14 +52,7 @@ async function generateSitemap() {
   });
 
   // Popular Studio Pages
-  const popularStudios = [
-    "mappa",
-    "madhouse",
-    "bones",
-    "kyoto-animation",
-    "toei-animation",
-  ];
-
+  const popularStudios = ["mappa", "madhouse", "bones", "kyoto-animation", "toei-animation"];
   popularStudios.forEach((studio) => {
     urls.push(`
       <url>
@@ -77,6 +60,25 @@ async function generateSitemap() {
         <lastmod>${today}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.65</priority>
+      </url>`);
+  });
+
+  // Collection Pages
+  const collections = [
+    "best-romance-anime",
+    "best-action-anime",
+    "best-isekai-anime",
+    "best-comedy-anime",
+    "best-horror-anime",
+  ];
+
+  collections.forEach((slug) => {
+    urls.push(`
+      <url>
+        <loc>${baseUrl}/collections/${slug}</loc>
+        <lastmod>${today}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.75</priority>
       </url>`);
   });
 
