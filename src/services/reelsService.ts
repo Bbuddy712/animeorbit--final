@@ -2,17 +2,17 @@ import { supabase } from "@/lib/supabase";
 import type { Reel } from "@/types/reel";
 
 // ============================================
-// MOCK DATA (Fallback) - Using stable public test videos
+// MOCK DATA (Fallback) - First reel now uses real Cloudinary video
 // ============================================
 const mockReels: Reel[] = [
   {
     id: "reel_1",
-    title: "Epic Fight Scene - Jujutsu Kaisen",
-    videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-    thumbnail: "https://picsum.photos/id/1015/300/400",
-    animeTitle: "Jujutsu Kaisen",
-    likes: 124000,
-    views: 2450000,
+    title: "Cloudinary Test Reel",
+    videoUrl: "https://res.cloudinary.com/dqgzopdky/video/upload/EDIT_4k_hrd1bo.mp4",
+    thumbnail: "https://res.cloudinary.com/dqgzopdky/video/upload/EDIT_4k_hrd1bo.jpg",
+    animeTitle: "Demon Slayer",
+    likes: 0,
+    views: 0,
   },
   {
     id: "reel_2",
