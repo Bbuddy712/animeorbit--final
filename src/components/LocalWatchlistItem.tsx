@@ -48,7 +48,7 @@ const LocalWatchlistItem = React.memo(function LocalWatchlistItem({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-3xl border border-[rgba(124,58,237,0.14)] bg-[#0a1228]/95 p-3 shadow-[0_0_40px_rgba(124,58,237,0.06)]"
+      className="group rounded-3xl border border-white/10 bg-[#0d1526]/95 p-3 transition-all duration-300 hover:border-[#7c3aed]/40 hover:shadow-[0_0_0_1px_rgba(124,58,237,0.2),0_12px_40px_-10px_rgba(0,0,0,0.5)] hover:-translate-y-0.5"
     >
       <div className="flex items-start gap-3">
         <div className="h-14 w-14 shrink-0 overflow-hidden rounded-3xl bg-[#06111e]">
