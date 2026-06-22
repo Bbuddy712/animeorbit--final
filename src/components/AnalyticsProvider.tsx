@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useRouter } from "@tanstack/react-router";
 import { initGA, trackPageView } from "@/lib/analytics";
-import { Analytics } from "@vercel/analytics/react";
 
 export function AnalyticsProvider() {
   const router = useRouter();
@@ -23,10 +22,5 @@ export function AnalyticsProvider() {
     return () => unsubscribe();
   }, [router]);
 
-  return (
-    <>
-      {/* Vercel Analytics for Core Web Vitals */}
-      <Analytics />
-    </>
-  );
+  return null;
 }
