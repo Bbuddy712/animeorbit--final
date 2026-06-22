@@ -24,13 +24,11 @@ export const Route = createFileRoute("/studio/$name")({
         { name: "keywords", content: `${studioName} anime, best ${studioName} anime, watch anime by ${studioName}` },
         { tagName: "link", rel: "canonical", href: canonicalUrl },
 
-        // Open Graph
         { property: "og:title", content: `${studioName} Anime | AnimeOrbit` },
         { property: "og:description", content: `Discover top anime from ${studioName}.` },
         { property: "og:url", content: canonicalUrl },
         { property: "og:type", content: "website" },
 
-        // Twitter
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: `${studioName} Anime | AnimeOrbit` },
         { name: "twitter:description", content: `Best anime by ${studioName}.` },
@@ -47,8 +45,6 @@ function StudioPage() {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 
-  // Note: For production, this should filter by studio.
-  // Currently showing top anime as placeholder.
   const studioAnime = useQuery({
     queryKey: ["studio", name],
     queryFn: () => jikanGetTopAnime({ data: { limit: 36 } }),
@@ -88,7 +84,6 @@ function StudioPage() {
           </div>
         )}
 
-        {/* Internal Linking - Content Graph */}
         <div className="mt-16 border-t border-white/10 pt-8">
           <h3 className="mb-4 text-lg font-semibold text-[#f8fafc]">Explore More</h3>
           <div className="flex flex-wrap gap-3">
@@ -104,7 +99,6 @@ function StudioPage() {
             <Link to="/genre/action" className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-[#f8fafc] transition hover:border-[#7c3aed]/40 hover:bg-white/10">
               Action Anime
             </Link>
-          </Link>
           </div>
         </div>
       </main>
