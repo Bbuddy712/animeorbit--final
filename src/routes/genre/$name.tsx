@@ -43,6 +43,19 @@ function GenrePage() {
     staleTime: 10 * 60 * 1000,
   });
 
+  if (genreAnime.isError) {
+    return (
+      <div className="min-h-screen bg-[#071120]">
+        <Navbar />
+        <div className="flex min-h-[60vh] items-center justify-center px-4">
+          <div className="text-center">
+            <p className="text-lg text-[#94a3b8]">Failed to load genre anime. Please try again later.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#071120]">
       <Navbar />
