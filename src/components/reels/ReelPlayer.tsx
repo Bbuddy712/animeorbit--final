@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, memo } from "react";
 import type { Reel } from "@/types/reel";
 
 interface ReelPlayerProps {
@@ -6,51 +6,39 @@ interface ReelPlayerProps {
   isActive: boolean;
 }
 
-export function ReelPlayer({ reel, isActive }: ReelPlayerProps) {
+function ReelPlayerComponent({ reel, isActive }: ReelPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Control play/pause based on active state
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
     if (isActive && !hasError) {
-      // Try to play the video
       const playPromise = video.play();
       if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // Autoplay was prevented or failed
-        });
+        playPromise.catch(() => {});
       }
     } else {
       video.pause();
     }
   }, [isActive, hasError]);
 
-  // Reset error state when reel changes
   useEffect(() => {
     setHasError(false);
     setIsLoading(true);
   }, [reel.id]);
 
-  const handleLoadedData = () => {
-    setIsLoading(false);
-  };
-
+  const handleLoadedData = () => setIsLoading(false);
   const handleError = () => {
     setHasError(true);
     setIsLoading(false);
   };
-
-  const handleWaiting = () => {
-    setIsLoading(true);
-  };
+  const handleWaiting = () => setIsLoading(true);
 
   return (
     <div className="relative h-full w-full bg-black">
-      {/* Video Element */}
       <video
         ref={videoRef}
         src={reel.videoUrl}
@@ -65,14 +53,12 @@ export function ReelPlayer({ reel, isActive }: ReelPlayerProps) {
         onWaiting={handleWaiting}
       />
 
-      {/* Loading State */}
       {isLoading && !hasError && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/60">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-white border-t-transparent" />
         </div>
       )}
 
-      {/* Error / Fallback State */}
       {hasError && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 text-white">
           <div className="mb-3 text-center">
@@ -91,3 +77,6 @@ export function ReelPlayer({ reel, isActive }: ReelPlayerProps) {
     </div>
   );
 }
+
+// Memoize to prevent unnecessary rerenders when parent re-renders
+export const ReelPlayer = memo(ReelPlayerComponent);
