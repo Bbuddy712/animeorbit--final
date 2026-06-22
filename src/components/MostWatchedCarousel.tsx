@@ -70,8 +70,8 @@ export function MostWatchedCarousel() {
               <Eye className="h-7 w-7 text-neon-pink" />
               <h2 className="text-2xl font-bold tracking-tight text-[#f8fafc] sm:text-3xl">
                 Most Watched Anime Today
-              </h2>
-            </div>
+            </h2>
+          </div>
             <p className="max-w-2xl text-sm text-[#94a3b8]">
               Top-ranked anime right now — refreshed every hour
             </p>
@@ -116,6 +116,7 @@ export function MostWatchedCarousel() {
                     : "w-1.5 bg-[#94a3b8]/30 hover:bg-[#94a3b8]/60"
                 }`}
                 aria-label={`Go to slide ${i + 1}`}
+              />
             ))}
           </div>
         </div>
