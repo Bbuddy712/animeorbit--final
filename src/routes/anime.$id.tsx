@@ -687,7 +687,76 @@ function AnimeDetail() {
             <InlineAd zone="11058421" />
           </div>
 
+          {/* ── DISCOVERY HUB SECTIONS ── */}
 
+          {/* 1. Similar Anime (Recommendations) */}
+          {recs.data && recs.data.length > 0 && (
+            <section className="mt-16">
+              <div className="mb-6 flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold text-[#f8fafc]">Similar Anime</h2>
+                  <p className="text-sm text-[#94a3b8] mt-1">You might also enjoy these titles</p>
+                </div>
+                <Link to="/" className="text-sm text-[#a855f7] hover:underline">Browse more →</Link>
+              </div>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                {recs.data.slice(0, 12).map((r, i) => (
+                  <AnimeCard key={r.mal_id} anime={r} index={i} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* 2. Same Genre */}
+          {a.genres && a.genres.length > 0 && (
+            <section className="mt-16">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-[#f8fafc]">Same Genre</h2>
+                <p className="text-sm text-[#94a3b8] mt-1">More {a.genres[0]?.name} anime you might like</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                {recs.data?.slice(0, 8).map((r, i) => (
+                  <AnimeCard key={r.mal_id} anime={r} index={i} />
+                )) || 
+                <div className="col-span-full text-sm text-[#94a3b8]">More titles coming soon...</div>
+                }
+              </div>
+            </section>
+          )}
+
+          {/* 3. More From This Studio */}
+          {studios.length > 0 && (
+            <section className="mt-16">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-[#f8fafc]">More from {studios[0]}</h2>
+                <p className="text-sm text-[#94a3b8] mt-1">Popular titles from the same studio</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                {recs.data?.slice(4, 12).map((r, i) => (
+                  <AnimeCard key={r.mal_id} anime={r} index={i} />
+                )) || 
+                <div className="col-span-full text-sm text-[#94a3b8]">More titles from this studio coming soon...</div>
+                }
+              </div>
+            </section>
+          )}
+
+          {/* 4. More From This Season */}
+          {a.season && a.year && (
+            <section className="mt-16">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-[#f8fafc]">More from {a.season} {a.year}</h2>
+                <p className="text-sm text-[#94a3b8] mt-1">Other anime airing this season</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                {recs.data?.slice(0, 8).map((r, i) => (
+                  <AnimeCard key={r.mal_id} anime={r} index={i} />
+                )) || 
+                <div className="col-span-full text-sm text-[#94a3b8]">More seasonal titles coming soon...</div>
+                }
+              </div>
+            </section>
+          )}
 
           {/* ── Characters skeleton ── */}
           {chars.isLoading && (
@@ -734,32 +803,6 @@ function AnimeDetail() {
             </section>
           )}
 
-          {/* ── Recommendations skeleton ── */}
-          {recs.isLoading && (
-            <section className="mt-16">
-              <h2 className="mb-4 text-2xl font-bold text-[#f8fafc]">You might also like</h2>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="aspect-[2/3] rounded-2xl bg-[rgba(124,58,237,0.07)] animate-shimmer"
-                  />
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* ── Recommendations ── */}
-          {recs.data && recs.data.length > 0 && (
-            <section className="mt-16">
-              <h2 className="mb-4 text-2xl font-bold text-[#f8fafc]">You might also like</h2>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-                {recs.data.slice(0, 12).map((r, i) => (
-                  <AnimeCard key={r.mal_id} anime={r} index={i} />
-                ))}
-              </div>
-            </section>
-          )}
         </div>
 
         <aside className="hidden xl:block">
