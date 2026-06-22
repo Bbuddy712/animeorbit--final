@@ -20,14 +20,38 @@ import { MobileStickyAd } from "@/components/Ads/MobileStickyAd";
 import { AdvertiseCard } from "@/components/Ads/AdvertiseCard";
 
 
-
 const MostWatchedCarousel = lazy(() => import("@/components/MostWatchedCarousel").then((m) => ({ default: m.MostWatchedCarousel })));
 const GenreGrid = lazy(() => import("@/components/GenreGrid").then((m) => ({ default: m.GenreGrid })));
 const DailyPick = lazy(() => import("@/components/DailyPick").then((m) => ({ default: m.DailyPick })));
 
-
 export const Route = createFileRoute("/")({
   component: Index,
+  head: () => {
+    const baseUrl = "https://animeorbit.com";
+    return {
+      meta: [
+        { title: "AnimeOrbit - Watch Anime Online | Free Anime Streaming" },
+        { name: "description", content: "Watch the latest anime episodes, trending shows, and classics for free with English subtitles on AnimeOrbit. Discover new anime every day." },
+        { name: "keywords", content: "watch anime, free anime, anime streaming, latest anime, trending anime, anime online" },
+
+        // Canonical
+        { tagName: "link", rel: "canonical", href: baseUrl },
+
+        // Open Graph
+        { property: "og:title", content: "AnimeOrbit - Watch Anime Online | Free Anime Streaming" },
+        { property: "og:description", content: "Stream the best anime with English subtitles. New episodes daily." },
+        { property: "og:image", content: `${baseUrl}/og-image.jpg` },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: baseUrl },
+
+        // Twitter
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: "AnimeOrbit - Watch Anime Online" },
+        { name: "twitter:description", content: "Free anime streaming with English subtitles." },
+        { name: "twitter:image", content: `${baseUrl}/og-image.jpg` },
+      ],
+    };
+  },
 });
 
 function Index() {
@@ -134,5 +158,47 @@ function Index() {
       <MobileStickyAd zone="11058414" />
     </div>
 
+  );
+}
+
+function HomeStructuredData() {
+  const baseUrl = "https://animeorbit.com";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${baseUrl}/#website`,
+        "url": baseUrl,
+        "name": "AnimeOrbit",
+        "description": "Watch anime online for free with English subtitles.",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": `${baseUrl}/search?q={search_term_string}`,
+          },
+          "query-input": "required name=search_term_string",
+        },
+      },
+      {
+        "@type": "Organization",
+        "@id": `${baseUrl}/#organization`,
+        "name": "AnimeOrbit",
+        "url": baseUrl,
+        "logo": {
+          "@type": "ImageObject",
+          "url": `${baseUrl}/logo.png`,
+        },
+      },
+    ],
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
   );
 }
