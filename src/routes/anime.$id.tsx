@@ -45,11 +45,15 @@ export const Route = createFileRoute("/anime/$id")({
   },
   head: ({ loaderData, params }) => {
     const anime = loaderData?.anime;
+    const baseUrl = "https://animeorbit.com";
+    const canonicalUrl = `${baseUrl}/anime/${params.id}`;
+
     if (!anime) {
       return {
         meta: [
           { title: "Anime | AnimeOrbit" },
           { name: "description", content: "Watch anime online on AnimeOrbit." },
+          { tagName: "link", rel: "canonical", href: canonicalUrl },
         ],
       };
     }
@@ -65,12 +69,15 @@ export const Route = createFileRoute("/anime/$id")({
         { name: "description", content: description },
         { name: "keywords", content: `${anime.title}, ${anime.title_english || ""}, watch anime, ${anime.genres?.map((g: any) => g.name).join(", ") || ""}` },
 
+        // Canonical URL (self-referencing)
+        { tagName: "link", rel: "canonical", href: canonicalUrl },
+
         // Open Graph
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:image", content: anime.images?.webp?.large_image_url || anime.images?.jpg?.large_image_url },
         { property: "og:type", content: "video.tv_show" },
-        { property: "og:url", content: `https://animeorbit.com/anime/${params.id}` },
+        { property: "og:url", content: canonicalUrl },
 
         // Twitter Cards
         { name: "twitter:card", content: "summary_large_image" },
