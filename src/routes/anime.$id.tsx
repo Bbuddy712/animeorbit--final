@@ -63,6 +63,11 @@ export const Route = createFileRoute("/anime/$id")({
       anime.synopsis?.slice(0, 155) + "..." ||
       `Watch ${anime.title_english || anime.title} online with English subtitles on AnimeOrbit.`;
 
+    const imageUrl =
+      anime.images?.webp?.large_image_url ||
+      anime.images?.jpg?.large_image_url ||
+      "/fallback-anime.jpg";
+
     return {
       meta: [
         { title },
@@ -75,7 +80,7 @@ export const Route = createFileRoute("/anime/$id")({
         // Open Graph
         { property: "og:title", content: title },
         { property: "og:description", content: description },
-        { property: "og:image", content: anime.images?.webp?.large_image_url || anime.images?.jpg?.large_image_url },
+        { property: "og:image", content: imageUrl },
         { property: "og:type", content: "video.tv_show" },
         { property: "og:url", content: canonicalUrl },
 
@@ -83,7 +88,7 @@ export const Route = createFileRoute("/anime/$id")({
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },
-        { name: "twitter:image", content: anime.images?.webp?.large_image_url || anime.images?.jpg?.large_image_url },
+        { name: "twitter:image", content: imageUrl },
       ],
     };
   },
@@ -103,7 +108,10 @@ function AnimeStructuredData({ anime }: { anime: any }) {
 
   const baseUrl = "https://animeorbit.com";
   const animeUrl = `${baseUrl}/anime/${anime.mal_id}`;
-  const imageUrl = anime.images?.webp?.large_image_url || anime.images?.jpg?.large_image_url;
+  const imageUrl =
+    anime.images?.webp?.large_image_url ||
+    anime.images?.jpg?.large_image_url ||
+    "/fallback-anime.jpg";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -353,10 +361,15 @@ function AnimeDetail() {
   useEffect(() => {
     if (anime.data) {
       const a = anime.data;
+      const imageUrl =
+        a.images?.webp?.large_image_url ||
+        a.images?.jpg?.large_image_url ||
+        "/fallback-anime.jpg";
+
       trackRecentlyViewedLocal({
         mal_id: a.mal_id,
         title: a.title_english || a.title,
-        image_url: a.images.webp.large_image_url,
+        image_url: imageUrl,
         score: a.score ?? null,
         total_episodes: a.episodes ?? null,
       });
@@ -364,7 +377,7 @@ function AnimeDetail() {
         {
           mal_id: a.mal_id,
           title: a.title_english || a.title,
-          image_url: a.images.webp.large_image_url,
+          image_url: imageUrl,
           score: a.score ?? null,
           total_episodes: a.episodes ?? null,
         },
@@ -378,12 +391,27 @@ function AnimeDetail() {
 
   if (anime.isLoading) return <DetailSkeleton />;
 
+  if (anime.isError) {
+    return (
+      <div className="min-h-screen bg-[#071120]">
+        <Navbar />
+        <div className="flex min-h-[60vh] items-center justify-center px-4">
+          <div className="text-center">
+            <p className="text-lg text-[#94a3b8]">Failed to load anime details. Please try again later.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!anime.data) return null;
 
   const a = anime.data;
 
-  // local-first: no auth gating
-
+  const imageUrl =
+    a.images?.webp?.large_image_url ||
+    a.images?.jpg?.large_image_url ||
+    "/fallback-anime.jpg";
 
   const studios = extras.data?.anilistStudios?.length
     ? extras.data.anilistStudios
@@ -403,7 +431,7 @@ function AnimeDetail() {
       <div className="relative min-h-[70vh] overflow-hidden">
         {/* Blurred backdrop */}
         <img
-          src={a.images.webp.large_image_url}
+          src={imageUrl}
           alt=""
           className="absolute inset-0 h-full w-full scale-110 object-cover opacity-25 blur-xl"
         />
@@ -437,7 +465,7 @@ function AnimeDetail() {
             >
               <div className="relative w-[200px] sm:w-[240px] md:w-[260px]">
                 <img
-                  src={a.images.webp.large_image_url}
+                  src={imageUrl}
                   alt={a.title}
                   className="w-full rounded-2xl shadow-[0_0_50px_rgba(124,58,237,0.3),0_28px_64px_rgba(0,0,0,0.7)]"
                 />
@@ -525,7 +553,6 @@ function AnimeDetail() {
                         ? `${extras.data.anilistScore}%`
                         : `${a.score?.toFixed(1)}/10`
                     }
-                  />
                 )}
               </div>
 
@@ -537,7 +564,7 @@ function AnimeDetail() {
                     toggleFavLocal({
                       mal_id: a.mal_id,
                       title: a.title_english || a.title,
-                      image_url: a.images.webp.large_image_url,
+                      image_url: imageUrl,
                       score: a.score ?? null,
                       total_episodes: a.episodes ?? null,
                     })
@@ -562,7 +589,7 @@ function AnimeDetail() {
                           {
                             mal_id: a.mal_id,
                             title: a.title_english || a.title,
-                            image_url: a.images.webp.large_image_url,
+                            image_url: imageUrl,
                             score: a.score ?? null,
                             total_episodes: a.episodes ?? null,
                           },
@@ -604,7 +631,7 @@ function AnimeDetail() {
                                     {
                                       mal_id: a.mal_id,
                                       title: a.title_english || a.title,
-                                      image_url: a.images.webp.large_image_url,
+                                      image_url: imageUrl,
                                       score: a.score ?? null,
                                       total_episodes: a.episodes ?? null,
                                     },
@@ -804,7 +831,7 @@ function AnimeDetail() {
                   >
                     <div className="aspect-[3/4] overflow-hidden">
                       <img
-                        src={c.character.images.webp.image_url}
+                        src={c.character.images?.webp?.image_url || "/fallback-anime.jpg"}
                         alt={c.character.name}
                         loading="lazy"
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
