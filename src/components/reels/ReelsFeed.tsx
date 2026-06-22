@@ -1,0 +1,82 @@
+import { useEffect, useRef, useState } from "react";
+import { useReels } from "@/hooks/useReels";
+import { ReelPlayer } from "./ReelPlayer";
+import { ReelActions } from "./ReelActions";
+import type { Reel } from "@/types/reel";
+
+export function ReelsFeed() {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useReels();
+  const [activeIndex, setActiveIndex] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const reels: Reel[] = data?.pages.flat() ?? [];
+
+  // Intersection Observer for autoplay
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = Number(entry.target.getAttribute("data-index"));
+            setActiveIndex(index);
+          }
+        });
+      },
+      { threshold: 0.7 }
+    );
+
+    const reelElements = containerRef.current?.querySelectorAll(".reel-container");
+    reelElements?.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [reels.length]);
+
+  // Infinite scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!containerRef.current || !hasNextPage || isFetchingNextPage) return;
+
+      const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+      if (scrollTop + clientHeight >= scrollHeight - 300) {
+        fetchNextPage();
+      }
+    };
+
+    const container = containerRef.current;
+    container?.addEventListener("scroll", handleScroll);
+    return () => container?.removeEventListener("scroll", handleScroll);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="h-screen overflow-y-scroll snap-y snap-mandatory bg-black"
+    >
+      {reels.map((reel, index) => (
+        <div
+          key={reel.id}
+          data-index={index}
+          className="reel-container relative h-screen w-full snap-start"
+        >
+          <ReelPlayer reel={reel} isActive={index === activeIndex} />
+
+          {/* Overlay Content */}
+          <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/80 to-transparent p-6">
+            <div className="mb-4">
+              <p className="text-sm font-semibold text-white/90">{reel.animeTitle}</p>
+              <h2 className="text-xl font-bold text-white">{reel.title}</h2>
+            </div>
+
+            <ReelActions reel={reel} />
+          </div>
+        </div>
+      ))}
+
+      {isFetchingNextPage && (
+        <div className="flex h-20 items-center justify-center text-white/60">
+          Loading more reels...
+        </div>
+      )}
+    </div>
+  );
+}
