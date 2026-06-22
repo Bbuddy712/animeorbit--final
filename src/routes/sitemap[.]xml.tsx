@@ -39,8 +39,11 @@ async function generateSitemap() {
       </url>`);
   });
 
-  // Popular Genre Pages
-  const popularGenres = ["action", "comedy", "romance", "fantasy", "sci-fi", "horror", "slice-of-life"];
+  // Expanded Genre Pages
+  const popularGenres = [
+    "action", "comedy", "romance", "fantasy", "sci-fi", "horror",
+    "slice-of-life", "drama", "mystery", "adventure"
+  ];
   popularGenres.forEach((genre) => {
     urls.push(`
       <url>
@@ -51,8 +54,11 @@ async function generateSitemap() {
       </url>`);
   });
 
-  // Popular Studio Pages
-  const popularStudios = ["mappa", "madhouse", "bones", "kyoto-animation", "toei-animation"];
+  // Expanded Studio Pages
+  const popularStudios = [
+    "mappa", "madhouse", "bones", "kyoto-animation", "toei-animation",
+    "ufotable", "wit-studio", "trigger"
+  ];
   popularStudios.forEach((studio) => {
     urls.push(`
       <url>
@@ -63,13 +69,16 @@ async function generateSitemap() {
       </url>`);
   });
 
-  // Collection Pages
+  // Expanded Collection Pages
   const collections = [
     "best-romance-anime",
     "best-action-anime",
     "best-isekai-anime",
     "best-comedy-anime",
     "best-horror-anime",
+    "best-fantasy-anime",
+    "best-shounen-anime",
+    "best-sci-fi-anime",
   ];
 
   collections.forEach((slug) => {
