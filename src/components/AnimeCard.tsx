@@ -7,6 +7,16 @@ import type { Anime } from "@/lib/jikan";
 function AnimeCardBase({ anime, index = 0 }: { anime: Anime; index?: number }) {
   const [imgLoaded, setImgLoaded] = useState(false);
 
+  const imageUrl =
+    anime.images?.webp?.large_image_url ||
+    anime.images?.jpg?.large_image_url ||
+    "/fallback-anime.jpg";
+
+  const title = anime.title_english || anime.title || "Unknown Anime";
+  const score = anime.score ?? null;
+  const year = anime.year ?? null;
+  const genre = anime.genres?.[0]?.name || "Anime";
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -23,8 +33,8 @@ function AnimeCardBase({ anime, index = 0 }: { anime: Anime; index?: number }) {
               <div className="absolute inset-0 animate-shimmer bg-[#0f172a]" />
             )}
             <img
-              src={anime.images.webp.large_image_url}
-              alt={anime.title}
+              src={imageUrl}
+              alt={title}
               loading="lazy"
               decoding="async"
               onLoad={() => setImgLoaded(true)}
@@ -48,10 +58,10 @@ function AnimeCardBase({ anime, index = 0 }: { anime: Anime; index?: number }) {
             </div>
 
             {/* Score badge */}
-            {anime.score && (
+            {score && (
               <div className="absolute right-2 top-2 flex items-center gap-1 rounded-full border border-[rgba(124,58,237,0.3)] bg-[rgba(13,21,38,0.85)] px-2 py-1 text-[11px] font-bold text-white backdrop-blur-md">
                 <Star className="h-2.5 w-2.5 fill-[#a855f7] text-[#a855f7]" />
-                {anime.score.toFixed(1)}
+                {score.toFixed(1)}
               </div>
             )}
           </div>
@@ -59,14 +69,14 @@ function AnimeCardBase({ anime, index = 0 }: { anime: Anime; index?: number }) {
           {/* Info */}
           <div className="p-3">
             <div className="mb-1 text-[9px] font-bold uppercase tracking-[0.25em] text-[#7c3aed]/75">
-              {anime.genres?.[0]?.name || "Anime"}
+              {genre}
             </div>
             <h3 className="line-clamp-2 text-[13px] font-semibold leading-snug text-[#f8fafc]">
-              {anime.title_english || anime.title}
+              {title}
             </h3>
             <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[10px] text-[#94a3b8]/70">
               {anime.episodes && <span>{anime.episodes} eps</span>}
-              {anime.year && <span>· {anime.year}</span>}
+              {year && <span>· {year}</span>}
             </div>
           </div>
         </div>
