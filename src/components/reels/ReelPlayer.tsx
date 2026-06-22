@@ -11,6 +11,10 @@ function ReelPlayerComponent({ reel, isActive }: ReelPlayerProps) {
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  // TEMP DEBUG - Remove after fixing
+  console.log("[ReelPlayer] Received reel:", reel);
+  console.log("[ReelPlayer] videoUrl:", reel?.videoUrl);
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -32,6 +36,7 @@ function ReelPlayerComponent({ reel, isActive }: ReelPlayerProps) {
 
   const handleLoadedData = () => setIsLoading(false);
   const handleError = () => {
+    console.error("[ReelPlayer] Video failed to load for:", reel?.title, "src:", reel?.videoUrl);
     setHasError(true);
     setIsLoading(false);
   };
@@ -78,5 +83,4 @@ function ReelPlayerComponent({ reel, isActive }: ReelPlayerProps) {
   );
 }
 
-// Memoize to prevent unnecessary rerenders when parent re-renders
 export const ReelPlayer = memo(ReelPlayerComponent);
