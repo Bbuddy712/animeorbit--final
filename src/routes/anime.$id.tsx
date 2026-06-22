@@ -2,7 +2,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 
-
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Star,
@@ -37,9 +36,51 @@ import {
 } from "@/lib/local-watchlist";
 import { useLocalFavorites, useLocalWatchlist } from "@/hooks/use-local-preferences";
 
-
 export const Route = createFileRoute("/anime/$id")({
   component: AnimeDetail,
+  loader: async ({ params }) => {
+    const malId = Number(params.id);
+    // Prefetch anime data for SEO (title, description, OG)
+    const anime = await jikanGetAnimeById({ data: { id: malId } });
+    return { anime };
+  },
+  head: ({ loaderData, params }) => {
+    const anime = loaderData?.anime;
+    if (!anime) {
+      return {
+        meta: [
+          { title: "Anime | AnimeOrbit" },
+          { name: "description", content: "Watch anime online on AnimeOrbit." },
+        ],
+      };
+    }
+
+    const title = `${anime.title_english || anime.title} - Watch Online | AnimeOrbit`;
+    const description =
+      anime.synopsis?.slice(0, 155) + "..." ||
+      `Watch ${anime.title_english || anime.title} online with English subtitles on AnimeOrbit.`;
+
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { name: "keywords", content: `${anime.title}, ${anime.title_english || ""}, watch anime, ${anime.genres?.map((g: any) => g.name).join(", ") || ""}` },
+
+        // Open Graph
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:image", content: anime.images?.webp?.large_image_url || anime.images?.jpg?.large_image_url },
+        { property: "og:type", content: "video.tv_show" },
+        { property: "og:url", content: `https://animeorbit.com/anime/${params.id}` },
+
+        // Twitter Cards
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        { name: "twitter:image", content: anime.images?.webp?.large_image_url || anime.images?.jpg?.large_image_url },
+      ],
+    };
+  },
 });
 
 const STATUSES = [
@@ -247,7 +288,6 @@ function AnimeDetail() {
           alt=""
           className="absolute inset-0 h-full w-full scale-110 object-cover opacity-25 blur-xl"
         />
-        {/* Gradient layers */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#071120]/30 via-[#071120]/60 to-[#071120]" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#071120]/80 via-[#071120]/30 to-transparent" />
         {/* Purple nebula tint */}
@@ -392,7 +432,6 @@ function AnimeDetail() {
                   <Heart className={`h-4 w-4 ${isFav ? "fill-[#a855f7] text-[#a855f7]" : ""}`} />
                   {isFav ? "Favorited" : "Favorite"}
                 </button>
-
 
                 {/* Watchlist dropdown */}
                 <div className="relative">
