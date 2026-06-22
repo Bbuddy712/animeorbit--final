@@ -12,6 +12,7 @@ import { Toaster } from "sonner";
 
 import { MonetagGlobalAds } from "@/components/Ads/MonetagGlobalAds";
 import { AnalyticsProvider } from "@/components/AnalyticsProvider";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 
 import appCss from "../styles.css?url";
 
@@ -96,7 +97,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.googleapis" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
@@ -132,6 +133,7 @@ function RootComponent() {
       <AnalyticsProvider />
       <MonetagGlobalAds />
       <Outlet />
+      <MobileBottomNav />
       <Toaster theme="dark" position="top-right" richColors />
     </QueryClientProvider>
   );
