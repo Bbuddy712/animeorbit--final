@@ -40,7 +40,6 @@ export const Route = createFileRoute("/anime/$id")({
   component: AnimeDetail,
   loader: async ({ params }) => {
     const malId = Number(params.id);
-    // Prefetch anime data for SEO (title, description, OG)
     const anime = await jikanGetAnimeById({ data: { id: malId } });
     return { anime };
   },
@@ -90,6 +89,118 @@ const STATUSES = [
   { value: "on_hold", label: "On hold" },
   { value: "dropped", label: "Dropped" },
 ] as const;
+
+// ─── Structured Data (JSON-LD) ───────────────────────────────────────────────
+function AnimeStructuredData({ anime }: { anime: any }) {
+  if (!anime) return null;
+
+  const baseUrl = "https://animeorbit.com";
+  const animeUrl = `${baseUrl}/anime/${anime.mal_id}`;
+  const imageUrl = anime.images?.webp?.large_image_url || anime.images?.jpg?.large_image_url;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      // TVSeries
+      {
+        "@type": "TVSeries",
+        "@id": animeUrl,
+        "name": anime.title_english || anime.title,
+        "alternateName": anime.title,
+        "description": anime.synopsis,
+        "image": imageUrl,
+        "genre": anime.genres?.map((g: any) => g.name) || [],
+        "contentRating": anime.rating,
+        "numberOfEpisodes": anime.episodes,
+        "startDate": anime.year ? `${anime.year}` : undefined,
+        "url": animeUrl,
+        "aggregateRating": anime.score
+          ? {
+              "@type": "AggregateRating",
+              "ratingValue": anime.score,
+              "bestRating": "10",
+              "ratingCount": anime.scored_by || undefined,
+            }
+          : undefined,
+      },
+
+      // VideoObject (Trailer if available)
+      ...(anime.trailer?.embed_url
+        ? [
+            {
+              "@type": "VideoObject",
+              "name": `${anime.title_english || anime.title} Trailer`,
+              "description": `Official trailer for ${anime.title_english || anime.title}`,
+              "thumbnailUrl": imageUrl,
+              "uploadDate": anime.trailer?.uploaded_date || undefined,
+              "embedUrl": anime.trailer.embed_url,
+              "url": animeUrl,
+            },
+          ]
+        : []),
+
+      // BreadcrumbList
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": baseUrl,
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Anime",
+            "item": `${baseUrl}/anime`,
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": anime.title_english || anime.title,
+            "item": animeUrl,
+          },
+        ],
+      },
+
+      // Organization
+      {
+        "@type": "Organization",
+        "@id": `${baseUrl}/#organization`,
+        "name": "AnimeOrbit",
+        "url": baseUrl,
+        "logo": {
+          "@type": "ImageObject",
+          "url": `${baseUrl}/logo.png`,
+        },
+      },
+
+      // WebSite + SearchAction
+      {
+        "@type": "WebSite",
+        "@id": `${baseUrl}/#website`,
+        "url": baseUrl,
+        "name": "AnimeOrbit",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": `${baseUrl}/search?q={search_term_string}`,
+          },
+          "query-input": "required name=search_term_string",
+        },
+      },
+    ],
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  );
+}
 
 // ─── Loading skeleton ─────────────────────────────────────────────────────────
 function DetailSkeleton() {
@@ -279,6 +390,7 @@ function AnimeDetail() {
       className="min-h-screen bg-[#071120]"
     >
       <Navbar />
+      <AnimeStructuredData anime={a} />
 
       {/* ── Cinematic hero banner ── */}
       <div className="relative min-h-[70vh] overflow-hidden">
