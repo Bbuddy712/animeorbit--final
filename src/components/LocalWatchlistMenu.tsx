@@ -8,7 +8,7 @@ import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { useLocalFavorites, useLocalRecentlyViewed, useLocalWatchlist } from "@/hooks/use-local-preferences";
 import type { LocalAnime, LocalWatchlistEntry, WatchStatus } from "@/lib/local-watchlist";
 import { LocalWatchlistItem } from "./LocalWatchlistItem";
-import { CardSkeleton } from "./skeletons/CardSkeleton";
+import { SectionHeader } from "./ui/SectionHeader";
 
 // Shared constants
 export const STATUS_LABELS: Record<WatchStatus, string> = {
@@ -82,11 +82,9 @@ export function LocalWatchlistMenu({ open, onOpenChange }: { open: boolean; onOp
   const isFavorite = (mal_id: number) => favorites.favorites.some((item) => item.mal_id === mal_id);
 
   const getEmptyMessage = () => {
-    switch (activeCategory) {
-      case "favorites": return "No favorites yet. Heart anime you love to save them here.";
-      case "recentlyViewed": return "Start browsing anime to build your viewing history.";
-      default: return "Add anime to your watchlist to see them here.";
-    }
+    if (activeCategory === "favorites") return "No favorites yet. Heart anime you love to save them here.";
+    if (activeCategory === "recentlyViewed") return "Start browsing anime to build your viewing history.";
+    return "Add anime to your watchlist to see them here.";
   };
 
   return (
