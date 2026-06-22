@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Sparkles, Search, ListChecks, Menu, X, User, LogOut } from "lucide-react";
+import { ChevronDown, Sparkles, Search, ListChecks, Menu, X, User, LogOut, Play } from "lucide-react";
 import { LocalWatchlistMenu } from "@/components/LocalWatchlistMenu";
 import { useAuth } from "@/components/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
 
 const NAV_LINKS = [
-  { label: "Trending", to: "/", hash: "trending" },
+  { label: "Trending", to: "/trending" },
   { label: "Genres", to: "/", hash: "genres" },
-  { label: "AI Finder", to: "/", hash: "ai-finder" },
+  { label: "AI Finder", to: "/ai-finder" },
+  { label: "Reels", to: "/reels" },
 ] as const;
 
 export function Navbar() {
@@ -188,7 +189,6 @@ export function Navbar() {
               className="fixed inset-x-4 top-[5rem] z-50 md:hidden"
             >
               <div className="overflow-hidden rounded-2xl border border-[rgba(124,58,237,0.2)] bg-[rgba(7,17,32,0.97)] shadow-[0_24px_64px_rgba(0,0,0,0.7)] backdrop-blur-2xl">
-                {/* Purple top accent */}
                 <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#7c3aed] to-transparent" />
 
                 <div className="p-4">
