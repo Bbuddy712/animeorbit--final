@@ -23,7 +23,7 @@ async function generateSitemap() {
       <priority>1.0</priority>
     </url>`);
 
-  // Discovery Pages (High Priority for Traffic)
+  // Core Discovery Pages
   const discoveryPages = [
     { path: "/trending", priority: "0.85", changefreq: "daily" },
     { path: "/top-rated", priority: "0.8", changefreq: "weekly" },
@@ -37,6 +37,46 @@ async function generateSitemap() {
         <lastmod>${today}</lastmod>
         <changefreq>${page.changefreq}</changefreq>
         <priority>${page.priority}</priority>
+      </url>`);
+  });
+
+  // Popular Genre Pages
+  const popularGenres = [
+    "action",
+    "comedy",
+    "romance",
+    "fantasy",
+    "sci-fi",
+    "horror",
+    "slice-of-life",
+  ];
+
+  popularGenres.forEach((genre) => {
+    urls.push(`
+      <url>
+        <loc>${baseUrl}/genre/${genre}</loc>
+        <lastmod>${today}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+      </url>`);
+  });
+
+  // Popular Studio Pages
+  const popularStudios = [
+    "mappa",
+    "madhouse",
+    "bones",
+    "kyoto-animation",
+    "toei-animation",
+  ];
+
+  popularStudios.forEach((studio) => {
+    urls.push(`
+      <url>
+        <loc>${baseUrl}/studio/${studio}</loc>
+        <lastmod>${today}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.65</priority>
       </url>`);
   });
 
