@@ -20,13 +20,11 @@ export const Route = createFileRoute("/genre/$name")({
         { name: "keywords", content: `${genreName.toLowerCase()} anime, best ${genreName.toLowerCase()} anime, watch ${genreName.toLowerCase()} anime online` },
         { tagName: "link", rel: "canonical", href: canonicalUrl },
 
-        // Open Graph
         { property: "og:title", content: `${genreName} Anime | AnimeOrbit` },
         { property: "og:description", content: `Explore top ${genreName.toLowerCase()} anime. New episodes and classics updated daily.` },
         { property: "og:url", content: canonicalUrl },
         { property: "og:type", content: "website" },
 
-        // Twitter
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: `${genreName} Anime | AnimeOrbit` },
         { name: "twitter:description", content: `Best ${genreName.toLowerCase()} anime streaming.` },
@@ -39,8 +37,6 @@ function GenrePage() {
   const { name } = Route.useParams();
   const genreName = name.charAt(0).toUpperCase() + name.slice(1).replace(/-/g, " ");
 
-  // Note: For production, this should use a dedicated genre endpoint.
-  // Currently using top anime as base (can be improved with genre filtering).
   const genreAnime = useQuery({
     queryKey: ["genre", name],
     queryFn: () => jikanGetTopAnime({ data: { limit: 36 } }),
@@ -76,11 +72,10 @@ function GenrePage() {
           </div>
         ) : (
           <div className="py-12 text-center text-[#94a3b8]">
-            No {genreName.toLowerCase()} anime found.
+            No ${genreName.toLowerCase()} anime found.
           </div>
         )}
 
-        {/* Internal Linking */}
         <div className="mt-16 border-t border-white/10 pt-8">
           <h3 className="mb-4 text-lg font-semibold text-[#f8fafc]">Explore More</h3>
           <div className="flex flex-wrap gap-3">
@@ -93,7 +88,6 @@ function GenrePage() {
             <Link to="/seasonal" className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-[#f8fafc] transition hover:border-[#7c3aed]/40 hover:bg-white/10">
               Current Season
             </Link>
-          </Link>
           </div>
         </div>
       </main>
