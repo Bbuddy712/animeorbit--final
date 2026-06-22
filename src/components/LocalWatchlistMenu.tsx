@@ -2,18 +2,15 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
-import {
-  ArrowRight, Check, Clock, Heart, ListChecks, Sparkles, Star, Trash2, X,
-} from "lucide-react";
+import { ArrowRight, Heart, ListChecks, Sparkles, Star, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
-import {
-  useLocalFavorites, useLocalRecentlyViewed, useLocalWatchlist,
-} from "@/hooks/use-local-preferences";
+import { useLocalFavorites, useLocalRecentlyViewed, useLocalWatchlist } from "@/hooks/use-local-preferences";
 import type { LocalAnime, LocalWatchlistEntry, WatchStatus } from "@/lib/local-watchlist";
 import { LocalWatchlistItem } from "./LocalWatchlistItem";
+import { CardSkeleton } from "./skeletons/CardSkeleton";
 
-// ── Shared Constants (exported for sub-components) ──
+// Shared constants
 export const STATUS_LABELS: Record<WatchStatus, string> = {
   plan_to_watch: "Planned", watching: "Watching", completed: "Completed",
   on_hold: "On Hold", dropped: "Dropped",
@@ -90,7 +87,6 @@ export function LocalWatchlistMenu({ open, onOpenChange }: { open: boolean; onOp
         {open && (
           <motion.div initial={{ opacity: 0, y: -8, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -8, scale: 0.96 }} transition={{ duration: 0.18, ease: "easeOut" }} className="absolute right-0 top-full z-50 mt-3 min-w-[320px] max-w-[520px] overflow-hidden rounded-3xl border border-[rgba(124,58,237,0.22)] bg-[#070f1f]/95 shadow-[0_36px_80px_rgba(0,0,0,0.5)] backdrop-blur-2xl">
             
-            {/* Header */}
             <div className="border-b border-[rgba(124,58,237,0.18)] px-5 py-4">
               <div className="flex items-center justify-between gap-3">
                 <div>
@@ -100,7 +96,6 @@ export function LocalWatchlistMenu({ open, onOpenChange }: { open: boolean; onOp
                 <button onClick={() => onOpenChange(false)} className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[rgba(124,58,237,0.18)] bg-[rgba(15,23,42,0.84)] text-[#94a3b8] transition hover:border-[rgba(124,58,237,0.35)] hover:text-white" aria-label="Close list menu"><X className="h-4 w-4" /></button>
               </div>
 
-              {/* Stats */}
               <div className="mt-4 grid gap-2 sm:grid-cols-3">
                 <div className="rounded-2xl border border-[rgba(124,58,237,0.14)] bg-[rgba(124,58,237,0.05)] px-4 py-3"><p className="text-[11px] uppercase tracking-[0.22em] text-[#94a3b8]/70">Favorites</p><p className="mt-2 text-2xl font-semibold text-[#f8fafc]">{favorites.favorites.length}</p></div>
                 <div className="rounded-2xl border border-[rgba(124,58,237,0.14)] bg-[rgba(124,58,237,0.05)] px-4 py-3"><p className="text-[11px] uppercase tracking-[0.22em] text-[#94a3b8]/70">Watchlist</p><p className="mt-2 text-2xl font-semibold text-[#f8fafc]">{watchlist.entries.length}</p></div>
@@ -108,7 +103,6 @@ export function LocalWatchlistMenu({ open, onOpenChange }: { open: boolean; onOp
               </div>
             </div>
 
-            {/* Category Tabs */}
             <div className="border-b border-[rgba(124,58,237,0.14)] px-4 py-3 sm:px-5">
               <div className="flex flex-wrap gap-2">
                 {(["favorites", ...STATUS_ORDER, "recentlyViewed"] as const).map((category) => (
@@ -119,7 +113,6 @@ export function LocalWatchlistMenu({ open, onOpenChange }: { open: boolean; onOp
               </div>
             </div>
 
-            {/* Items List */}
             <div className="max-h-[62vh] overflow-y-auto px-4 py-4 sm:px-5">
               {activeItems.length === 0 ? (
                 <div className="rounded-3xl border border-[rgba(124,58,237,0.14)] bg-[rgba(15,23,42,0.75)] p-8 text-center text-sm text-[#94a3b8]">
