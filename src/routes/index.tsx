@@ -1,13 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Flame, Sparkles, Trophy } from "lucide-react";
+import { Flame, Sparkles, Trophy, Calendar } from "lucide-react";
 import {
   jikanGetTrending,
   jikanGetTopAnime,
   jikanGetSeasonNow,
   jikanGetRandom,
 } from "@/lib/jikan.functions";
-import { aiTrendingByRegion } from "@/lib/search.functions";
 import { Suspense, lazy } from "react";
 
 import { Navbar } from "@/components/Navbar";
@@ -18,7 +17,7 @@ import { TopBannerAd } from "@/components/Ads/TopBannerAd";
 import { InlineAd } from "@/components/Ads/InlineAd";
 import { MobileStickyAd } from "@/components/Ads/MobileStickyAd";
 import { AdvertiseCard } from "@/components/Ads/AdvertiseCard";
-
+import { Link } from "@tanstack/react-router";
 
 const MostWatchedCarousel = lazy(() => import("@/components/MostWatchedCarousel").then((m) => ({ default: m.MostWatchedCarousel })));
 const GenreGrid = lazy(() => import("@/components/GenreGrid").then((m) => ({ default: m.GenreGrid })));
@@ -33,18 +32,12 @@ export const Route = createFileRoute("/")({
         { title: "AnimeOrbit - Watch Anime Online | Free Anime Streaming" },
         { name: "description", content: "Watch the latest anime episodes, trending shows, and classics for free with English subtitles on AnimeOrbit. Discover new anime every day." },
         { name: "keywords", content: "watch anime, free anime, anime streaming, latest anime, trending anime, anime online" },
-
-        // Canonical
         { tagName: "link", rel: "canonical", href: baseUrl },
-
-        // Open Graph
         { property: "og:title", content: "AnimeOrbit - Watch Anime Online | Free Anime Streaming" },
         { property: "og:description", content: "Stream the best anime with English subtitles. New episodes daily." },
         { property: "og:image", content: `${baseUrl}/og-image.jpg` },
         { property: "og:type", content: "website" },
         { property: "og:url", content: baseUrl },
-
-        // Twitter
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: "AnimeOrbit - Watch Anime Online" },
         { name: "twitter:description", content: "Free anime streaming with English subtitles." },
@@ -63,9 +56,6 @@ function Index() {
     refetchInterval: 60 * 60_000,
     refetchOnWindowFocus: false,
   });
-
-  // Region queries are currently unused in this route.
-  // Keeping them removed avoids React Query option/type incompatibilities.
 
   const top = useQuery({
     queryKey: ["top"],
@@ -95,7 +85,6 @@ function Index() {
       <section className="pt-6">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <TopBannerAd />
-
         </div>
       </section>
       <main>
@@ -105,11 +94,9 @@ function Index() {
           <InlineAd zone="11058414" />
         </div>
 
-
         <Suspense fallback={null}>
           <MostWatchedCarousel />
         </Suspense>
-
 
         <AnimeRow
           id="trending"
@@ -123,7 +110,6 @@ function Index() {
         <div className="mt-6">
           <InlineAd zone="11058421" />
         </div>
-
 
         <Suspense fallback={null}>
           <GenreGrid />
@@ -150,14 +136,47 @@ function Index() {
         <Suspense fallback={null}>
           <DailyPick initial={random.data ?? null} />
         </Suspense>
-      </main>
 
+        {/* Discovery Hub Links */}
+        <div className="mx-auto max-w-7xl px-4 pt-8 pb-12 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <Link to="/trending" className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-[#0d1526]/80 p-5 transition hover:border-[#7c3aed]/40">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#7c3aed]/10 text-[#a855f7]">
+                <Flame className="h-6 w-6" />
+              </div>
+              <div>
+                <div className="font-semibold text-[#f8fafc] group-hover:text-[#a855f7]">Trending Now</div>
+                <div className="text-sm text-[#94a3b8]">What's hot this week</div>
+              </div>
+            </Link>
+
+            <Link to="/top-rated" className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-[#0d1526]/80 p-5 transition hover:border-[#7c3aed]/40">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#7c3aed]/10 text-[#a855f7]">
+                <Trophy className="h-6 w-6" />
+              </div>
+              <div>
+                <div className="font-semibold text-[#f8fafc] group-hover:text-[#a855f7]">Top Rated</div>
+                <div className="text-sm text-[#94a3b8]">The best of all time</div>
+              </div>
+            </Link>
+
+            <Link to="/seasonal" className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-[#0d1526]/80 p-5 transition hover:border-[#7c3aed]/40">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#7c3aed]/10 text-[#a855f7]">
+                <Calendar className="h-6 w-6" />
+              </div>
+              <div>
+                <div className="font-semibold text-[#f8fafc] group-hover:text-[#a855f7]">Current Season</div>
+                <div className="text-sm text-[#94a3b8]">What's airing now</div>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </main>
 
       <AdvertiseCard />
       <Footer />
       <MobileStickyAd zone="11058414" />
     </div>
-
   );
 }
 
