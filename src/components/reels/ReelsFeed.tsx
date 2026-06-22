@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useReels } from "@/hooks/useReels";
 import { ReelPlayer } from "./ReelPlayer";
 import { ReelActions } from "./ReelActions";
@@ -8,30 +8,43 @@ export function ReelsFeed() {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useReels();
   const [activeIndex, setActiveIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   const reels: Reel[] = data?.pages.flat() ?? [];
 
-  // Intersection Observer for autoplay
+  // Stable callback to avoid unnecessary re-renders
+  const handleIntersection = useCallback((entries: IntersectionObserverEntry[]) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const index = Number(entry.target.getAttribute("data-index"));
+        setActiveIndex((prev) => (prev !== index ? index : prev));
+      }
+    });
+  }, []);
+
+  // Intersection Observer setup with proper cleanup
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const index = Number(entry.target.getAttribute("data-index"));
-            setActiveIndex(index);
-          }
-        });
-      },
-      { threshold: 0.7 }
-    );
+    // Disconnect previous observer if exists
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    const observer = new IntersectionObserver(handleIntersection, {
+      threshold: 0.65,
+    });
+
+    observerRef.current = observer;
 
     const reelElements = containerRef.current?.querySelectorAll(".reel-container");
     reelElements?.forEach((el) => observer.observe(el));
 
-    return () => observer.disconnect();
-  }, [reels.length]);
+    return () => {
+      observer.disconnect();
+      observerRef.current = null;
+    };
+  }, [reels.length, handleIntersection]);
 
-  // Infinite scroll
+  // Infinite scroll (kept as is for now)
   useEffect(() => {
     const handleScroll = () => {
       if (!containerRef.current || !hasNextPage || isFetchingNextPage) return;
@@ -60,7 +73,6 @@ export function ReelsFeed() {
         >
           <ReelPlayer reel={reel} isActive={index === activeIndex} />
 
-          {/* Overlay Content */}
           <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/80 to-transparent p-6">
             <div className="mb-4">
               <p className="text-sm font-semibold text-white/90">{reel.animeTitle}</p>
