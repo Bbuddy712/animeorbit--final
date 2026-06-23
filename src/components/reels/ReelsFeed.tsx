@@ -12,25 +12,34 @@ export function ReelsFeed() {
 
   const reels: Reel[] = data?.pages.flat() ?? [];
 
-  // Stable callback to avoid unnecessary re-renders
+  // Improved intersection handler: only activate the reel with highest visibility
   const handleIntersection = useCallback((entries: IntersectionObserverEntry[]) => {
+    let maxRatio = 0;
+    let bestIndex = activeIndex;
+
     entries.forEach((entry) => {
-      if (entry.isIntersecting) {
+      if (entry.intersectionRatio > maxRatio) {
+        maxRatio = entry.intersectionRatio;
         const index = Number(entry.target.getAttribute("data-index"));
-        setActiveIndex((prev) => (prev !== index ? index : prev));
+        if (!isNaN(index)) {
+          bestIndex = index;
+        }
       }
     });
-  }, []);
 
-  // Intersection Observer setup with proper cleanup
+    if (bestIndex !== activeIndex && maxRatio > 0.25) {
+      setActiveIndex(bestIndex);
+    }
+  }, [activeIndex]);
+
+  // Intersection Observer with multiple thresholds for smoother behavior
   useEffect(() => {
-    // Disconnect previous observer if exists
     if (observerRef.current) {
       observerRef.current.disconnect();
     }
 
     const observer = new IntersectionObserver(handleIntersection, {
-      threshold: 0.65,
+      threshold: [0.25, 0.5, 0.75, 1],
     });
 
     observerRef.current = observer;
@@ -44,7 +53,7 @@ export function ReelsFeed() {
     };
   }, [reels.length, handleIntersection]);
 
-  // Infinite scroll (kept as is for now)
+  // Infinite scroll
   useEffect(() => {
     const handleScroll = () => {
       if (!containerRef.current || !hasNextPage || isFetchingNextPage) return;
