@@ -11,109 +11,62 @@ function ReelPlayerComponent({ reel, isActive }: ReelPlayerProps) {
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Guard against undefined reel (prevents crash)
-  if (!reel) {
-    console.error("[ReelPlayer] reel is undefined");
-    return null;
-  }
+  if (!reel) return null;
 
-  // === TEMP DEBUG LOGS ===
-  console.log("[ReelPlayer] reel =", reel);
-  console.log("[ReelPlayer] videoUrl =", reel?.videoUrl);
-
-  useEffect(() => {
-    try {
-      const video = videoRef.current;
-      if (!video) return;
-
-      console.log("[VIDEO SRC after mount]", video.src);
-
-      if (isActive && !hasError) {
-        console.log("[PLAY ATTEMPT] isActive=", isActive, "src=", video.src);
-        const playPromise = video.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => console.log("[PLAY SUCCESS]"))
-            .catch((err) => console.error("[PLAY ERROR]", err));
-        }
-      } else {
-        video.pause();
-      }
-    } catch (err) {
-      console.error("[ReelPlayer useEffect error]", err);
-    }
-  }, [isActive, hasError]);
-
+  // Reset state when reel changes
   useEffect(() => {
     setHasError(false);
     setIsLoading(true);
   }, [reel.id]);
 
-  const handleLoadedData = () => {
-    console.log("[LOADED DATA]", reel.title);
+  // Control playback - only active reel plays
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isActive && !hasError) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [isActive, hasError]);
+
+  const handleLoadedData = () => setIsLoading(false);
+  const handleError = () => {
+    setHasError(true);
     setIsLoading(false);
   };
-
-  const handleError = () => {
-    try {
-      const video = videoRef.current;
-      console.error("[VIDEO ERROR]", {
-        title: reel.title,
-        src: video?.src,
-        error: video?.error,
-        networkState: video?.networkState,
-        readyState: video?.readyState,
-      });
-      setHasError(true);
-      setIsLoading(false);
-    } catch (err) {
-      console.error("[handleError error]", err);
-    }
-  };
-
-  const handleWaiting = () => {
-    setIsLoading(true);
-  };
+  const handleWaiting = () => setIsLoading(true);
 
   return (
     <div className="relative h-full w-full bg-black">
       <video
         ref={videoRef}
         src={reel.videoUrl}
+        poster={reel.thumbnail}
         className="h-full w-full object-cover"
         loop
         muted
         playsInline
         preload="metadata"
-        poster={reel.thumbnail}
         onLoadedData={handleLoadedData}
         onError={handleError}
         onWaiting={handleWaiting}
       />
 
       {isLoading && !hasError && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+        <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-white border-t-transparent" />
         </div>
       )}
 
-      {/* TEMPORARILY DISABLED ERROR FALLBACK FOR DEBUGGING
       {hasError && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 text-white">
-          <div className="mb-3 text-center">
-            <p className="text-sm">Failed to load video</p>
-            <p className="mt-1 text-xs text-white/60">{reel.animeTitle}</p>
-          </div>
-          {reel.thumbnail && (
-            <img
-              src={reel.thumbnail}
-              alt={reel.title}
-              className="max-h-[60%] rounded object-cover"
-            />
-          )}
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/90 z-10 text-white text-center p-4">
+          <img src={reel.thumbnail} alt={reel.title} className="max-h-[50%] object-contain opacity-70 rounded" />
+          <p className="mt-4 text-sm">Failed to load video</p>
+          <p className="text-xs text-white/60 mt-1">{reel.animeTitle}</p>
         </div>
       )}
-      */}
     </div>
   );
 }
