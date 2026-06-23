@@ -11,26 +11,36 @@ function ReelPlayerComponent({ reel, isActive }: ReelPlayerProps) {
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Guard against undefined reel (prevents crash)
+  if (!reel) {
+    console.error("[ReelPlayer] reel is undefined");
+    return null;
+  }
+
   // === TEMP DEBUG LOGS ===
   console.log("[ReelPlayer] reel =", reel);
   console.log("[ReelPlayer] videoUrl =", reel?.videoUrl);
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
+    try {
+      const video = videoRef.current;
+      if (!video) return;
 
-    console.log("[VIDEO SRC after mount]", video.src);
+      console.log("[VIDEO SRC after mount]", video.src);
 
-    if (isActive && !hasError) {
-      console.log("[PLAY ATTEMPT] isActive=", isActive, "src=", video.src);
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => console.log("[PLAY SUCCESS]"))
-          .catch((err) => console.error("[PLAY ERROR]", err));
+      if (isActive && !hasError) {
+        console.log("[PLAY ATTEMPT] isActive=", isActive, "src=", video.src);
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => console.log("[PLAY SUCCESS]"))
+            .catch((err) => console.error("[PLAY ERROR]", err));
+        }
+      } else {
+        video.pause();
       }
-    } else {
-      video.pause();
+    } catch (err) {
+      console.error("[ReelPlayer useEffect error]", err);
     }
   }, [isActive, hasError]);
 
@@ -45,16 +55,20 @@ function ReelPlayerComponent({ reel, isActive }: ReelPlayerProps) {
   };
 
   const handleError = () => {
-    const video = videoRef.current;
-    console.error("[VIDEO ERROR]", {
-      title: reel.title,
-      src: video?.src,
-      error: video?.error,
-      networkState: video?.networkState,
-      readyState: video?.readyState,
-    });
-    setHasError(true);
-    setIsLoading(false);
+    try {
+      const video = videoRef.current;
+      console.error("[VIDEO ERROR]", {
+        title: reel.title,
+        src: video?.src,
+        error: video?.error,
+        networkState: video?.networkState,
+        readyState: video?.readyState,
+      });
+      setHasError(true);
+      setIsLoading(false);
+    } catch (err) {
+      console.error("[handleError error]", err);
+    }
   };
 
   const handleWaiting = () => {
