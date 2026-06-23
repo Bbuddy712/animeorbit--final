@@ -2,7 +2,7 @@ import { supabase } from "@/lib/supabase";
 import type { Reel } from "@/types/reel";
 
 // ============================================
-// MOCK DATA (Fallback) - First reel now uses real Cloudinary video
+// MOCK DATA (Fallback) - Keep until Supabase has real data
 // ============================================
 const mockReels: Reel[] = [
   {
@@ -35,7 +35,7 @@ const mockReels: Reel[] = [
 ];
 
 // ============================================
-// getReels
+// getReels - Supabase first, mock fallback
 // ============================================
 export async function getReels(page: number = 1, limit: number = 10): Promise<Reel[]> {
   try {
@@ -45,9 +45,13 @@ export async function getReels(page: number = 1, limit: number = 10): Promise<Re
       .order("created_at", { ascending: false })
       .range((page - 1) * limit, page * limit - 1);
 
-    if (error) throw error;
+    if (error) {
+      console.warn("[reelsService] Supabase error:", error.message);
+      throw error;
+    }
 
     if (data && data.length > 0) {
+      console.log(`[reelsService] Loaded ${data.length} reels from Supabase`);
       return data.map((reel: any) => ({
         id: reel.id,
         title: reel.title,
@@ -58,19 +62,19 @@ export async function getReels(page: number = 1, limit: number = 10): Promise<Re
         views: reel.views || 0,
       }));
     }
+
+    console.log("[reelsService] Supabase returned no reels, using mock data");
   } catch (err) {
-    console.warn("Supabase getReels failed, falling back to mock data", err);
+    console.warn("[reelsService] Falling back to mock data", err);
   }
 
   // Fallback to mock data
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  await new Promise((resolve) => setTimeout(resolve, 200));
   const start = (page - 1) * limit;
   return mockReels.slice(start, start + limit);
 }
 
-// ============================================
-// incrementViews
-// ============================================
+// Other functions remain the same...
 export async function incrementViews(id: string): Promise<void> {
   try {
     const { data, error: selectError } = await supabase
@@ -94,9 +98,6 @@ export async function incrementViews(id: string): Promise<void> {
   }
 }
 
-// ============================================
-// toggleLike
-// ============================================
 export async function toggleLike(reelId: string, userId: string): Promise<void> {
   try {
     const { data } = await supabase
@@ -116,9 +117,6 @@ export async function toggleLike(reelId: string, userId: string): Promise<void> 
   }
 }
 
-// ============================================
-// bookmarkReel
-// ============================================
 export async function bookmarkReel(reelId: string, userId: string): Promise<void> {
   try {
     const { data } = await supabase
@@ -138,9 +136,6 @@ export async function bookmarkReel(reelId: string, userId: string): Promise<void
   }
 }
 
-// ============================================
-// saveWatchHistory
-// ============================================
 export async function saveWatchHistory(reelId: string, userId: string): Promise<void> {
   try {
     await supabase.from("watch_history").insert({
@@ -152,9 +147,6 @@ export async function saveWatchHistory(reelId: string, userId: string): Promise<
   }
 }
 
-// ============================================
-// getComments
-// ============================================
 export async function getComments(reelId: string) {
   try {
     const { data, error } = await supabase
@@ -171,9 +163,6 @@ export async function getComments(reelId: string) {
   }
 }
 
-// ============================================
-// addComment
-// ============================================
 export async function addComment(reelId: string, userId: string, comment: string) {
   try {
     const { error } = await supabase.from("comments").insert({
