@@ -7,6 +7,12 @@ interface ReelActionsProps {
 }
 
 export function ReelActions({ reel }: ReelActionsProps) {
+  // Defensive guard to prevent runtime crash
+  if (!reel) {
+    console.error("[ReelActions] reel is undefined");
+    return null;
+  }
+
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
