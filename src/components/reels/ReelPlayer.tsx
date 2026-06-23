@@ -83,6 +83,7 @@ function ReelPlayerComponent({ reel, isActive }: ReelPlayerProps) {
         </div>
       )}
 
+      {/* TEMPORARILY DISABLED ERROR FALLBACK FOR DEBUGGING
       {hasError && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 text-white">
           <div className="mb-3 text-center">
@@ -98,6 +99,7 @@ function ReelPlayerComponent({ reel, isActive }: ReelPlayerProps) {
           )}
         </div>
       )}
+      */}
     </div>
   );
 }
