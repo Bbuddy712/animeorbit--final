@@ -1,3 +1,5 @@
+// [TEST] Harmless comment added by github-copilot skill - safe to remove
+
 import { useEffect, useRef, useState, memo } from "react";
 import type { Reel } from "@/types/reel";
 
